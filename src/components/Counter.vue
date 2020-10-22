@@ -16,24 +16,27 @@
         class="timer"
         v-bind:class="{ 'blue-color': isStart, 'green-color': isBreak, 'red-color': isStop }"
       >{{ displayMinutes }}:{{ displaySeconds }}</div>
+      <h2
+        v-bind:class="{ 'blue-color': isStart, 'green-color': isBreak, 'red-color': isStop }"
+      >Counter: {{ count }}</h2>
 
       <div>
         <!-- Start Button -->
         <button
           class="btn start-btn"
           v-bind:class="{'not-active': (isStart || !phase)}"
-          v-on:click="changeState(0), timer(timeLength)"
+          v-on:click="changeState(0), displayTime(timeInSeconds(timeLength)), timer(timeLength)"
         >Start Timer</button>
         <!-- Break Start Button -->
         <button
           class="btn break-btn"
           v-bind:class="{'not-active': (isBreak || phase)}"
-          v-on:click="changeState(1), displayTime(timeInSeconds(breakLength)), timer(breakLength)"
+          v-on:click="changeState(1), displayTime(timeInSeconds(breakLength)), timer(breakLength), updateCount(true)"
         >Start Break</button>
         <!-- Reset Button -->
         <button
           class="btn reset-btn"
-          v-on:click="changeState(3), displayTime(timeInSeconds(timeLength))"
+          v-on:click="changeState(3), displayTime(timeInSeconds(timeLength)), updateCount(false)"
         >Reset</button>
       </div>
     </div>
@@ -62,7 +65,9 @@ export default {
     isStop: false,
     isReset: false,
     // Horrible phase variable
-    phase: true
+    phase: true,
+    // Pomodoro counter
+    count: 0
   }),
   // computed: {
   //   timeInSeconds() {
@@ -84,6 +89,14 @@ export default {
 
       this.displayMinutes = minutes < 10 ? "0" + minutes : minutes;
       this.displaySeconds = seconds < 10 ? "0" + seconds : seconds;
+    },
+    // Method to update the counter
+    updateCount(value) {
+      if (value === false) {
+        this.count = 0;
+      } else {
+        this.count++;
+      }
     },
     // Method that counts down based on a given time passed in
     timer(time) {
